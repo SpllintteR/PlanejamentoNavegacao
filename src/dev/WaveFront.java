@@ -6,6 +6,8 @@ import java.util.List;
 public class WaveFront {
 
 	private int[][]	pontos;
+	private Ponto	inicio;
+	private Ponto	fim;
 
 	public static void main(final String[] args) {
 		WaveFront mapa = new WaveFront();
@@ -24,11 +26,81 @@ public class WaveFront {
 		cenario.addPontoInvalido(new Ponto(6, 3));
 		cenario.addPontoInvalido(new Ponto(6, 5));
 		mapa.valorarGrafo(cenario);
-		/*
-		 * for (int i = 0; i < mapa.pontos.length; i++) { String str = ""; for
-		 * (int j = 0; j < mapa.pontos[i].length; j++) { str +=
-		 * mapa.pontos[i][j] + " "; } System.out.println(str); }
-		 */
+
+		for (int i = 0; i < mapa.pontos.length; i++) {
+			String str = "";
+			for (int j = 0; j < mapa.pontos[i].length; j++) {
+				str += mapa.pontos[i][j] + " ";
+			}
+			System.out.println(str);
+		}
+
+		List<Passo> passos = new ArrayList<>();
+		mapa.encontrarPassos(passos, mapa.inicio);
+		while (passos.size() > 0) {
+			Passo p = passos.get(0);
+			System.out.println(p);
+			if (p == Passo.DIREITA) {
+
+			} else {
+				if (p == Passo.ESQUERDA) {
+
+				} else {
+					if (p == Passo.CIMA) {
+
+					} else {
+
+					}
+				}
+			}
+			passos.remove(0);
+		}
+
+	}
+
+	private void encontrarPassos(final List<Passo> passos, final Ponto ponto) {
+		if (pontos[ponto.getX()][ponto.getY()] != 2) {
+			Ponto prox = null;
+			int melhor = Integer.MAX_VALUE;
+			Passo ret = null;
+			int aux = 0;
+			if (ponto.getY() != (pontos[0].length - 1)) {
+				if (pontos[ponto.getX()][ponto.getY() + 1] != -1) {
+					prox = new Ponto(ponto.getX(), ponto.getY() + 1);
+					melhor = pontos[prox.getX()][prox.getY()];
+					ret = Passo.DIREITA;
+				}
+			}
+
+			if (ponto.getY() > 0) {
+				aux = pontos[ponto.getX()][ponto.getY() - 1];
+				if ((aux != -1) && (aux < melhor)) {
+					melhor = aux;
+					ret = Passo.ESQUERDA;
+					prox = new Ponto(ponto.getX(), ponto.getY() - 1);
+				}
+			}
+
+			if (ponto.getX() != (pontos.length - 1)) {
+				aux = pontos[ponto.getX() + 1][ponto.getY()];
+				if ((aux != -1) && (aux < melhor)) {
+					melhor = aux;
+					ret = Passo.BAIXO;
+					prox = new Ponto(ponto.getX() + 1, ponto.getY());
+				}
+			}
+
+			if (ponto.getX() > 0) {
+				aux = pontos[ponto.getX() - 1][ponto.getY()];
+				if ((aux != -1) && (aux < melhor)) {
+					ret = Passo.CIMA;
+					prox = new Ponto(ponto.getX() - 1, ponto.getY());
+				}
+			}
+			passos.add(ret);
+			System.out.println(ret);
+			encontrarPassos(passos, prox);
+		}
 	}
 
 	private void valorarGrafo(final Cenario cenario) {
@@ -36,14 +108,13 @@ public class WaveFront {
 		for (Ponto p : cenario.getPontosInvalidos()) {
 			pontos[p.getX()][p.getY()] = -1;
 		}
-		Ponto p = cenario.getFim();
-		pontos[p.getX()][p.getY()] = 2;
+		fim = cenario.getFim();
+		inicio = cenario.getInicio();
 
-		// p = cenario.getInicio();
-		// pontos[p.getX()][p.getY()] = 1;
+		pontos[fim.getX()][fim.getY()] = 2;
 
 		List<Ponto> ps = new ArrayList<Ponto>();
-		preencheVizinhos(ps, p);
+		preencheVizinhos(ps, fim);
 		while (ps.size() > 0) {
 			preencheVizinhos(ps, ps.get(0));
 			ps.remove(0);
